@@ -59,7 +59,7 @@ Setup Instructions
 --------------
 Clone the repo from below copmmand or download zip and set it up in your local workspace.
 ```
-git clone https://github.com/Daphney24/PayconiqAssessment.git
+git clone https://github.com/Daphney24/AlbertHeinAssessment.git
 ```
 
 Verify Installation and Running test
