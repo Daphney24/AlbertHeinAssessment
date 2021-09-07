@@ -46,6 +46,7 @@ Building Up the Framework
 * Step 3 : Add testing plugin
 * Step 4 : Create tests
 * Step 5 : Run and Verify
+
 **Note the run and verify are only applicable if API exist
 
 ### Installation (pre-requisites)
@@ -71,11 +72,13 @@ Go to your project directory from terminal and hit following commands
 ```
 mvn test
 ```
-**Note: The above step is only aplicable is API exists
+
+**Note: The above step is only aplicable if API exists
 	
 	
 ### Reporters
 	
 Once you ran your tests, the reports are generates in Extent Reports Format to communicate pass/failure.To look at the results in IDE, open the folder 
 test-output/Report/test/ExtentReport.html
+
 **Note: The above step is only valid if API exists.
