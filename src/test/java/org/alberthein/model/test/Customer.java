@@ -4,13 +4,13 @@ public class Customer {
 
 	private int noOfStamps;
 	private int noOfFullCards;
-	private Promotion promotion;
+	private Promotion[] promotions;
 	
-	public Customer(int noOfStamps, int noOfFullCards, Promotion promotion) {
+	public Customer(int noOfStamps, int noOfFullCards, Promotion[] promotions) {
 		super();
 		this.noOfStamps = noOfStamps;
 		this.noOfFullCards = noOfFullCards;
-		this.promotion = promotion;
+		this.promotions = promotions;
 	}
 
 	public int getNoOfStamps() {
@@ -21,7 +21,9 @@ public class Customer {
 		return noOfFullCards;
 	}
 
-	public Promotion getPromotion() {
-		return promotion;
+	public Promotion[] getPromotions() {
+		return promotions;
 	}
+	
+	
 }

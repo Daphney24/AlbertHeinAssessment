@@ -1,24 +1,30 @@
 package org.alberthein.api.test;
 
-
 import static io.restassured.RestAssured.given;
 import java.util.Properties;
 import org.base.test.BaseTest;
 import org.alberthein.model.test.Customer;
-import org.alberthein.model.test.Promotion;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import com.relevantcodes.extentreports.LogStatus;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import junit.framework.Assert;
+import utils.ExtentReportListener;
 
-public class AlbertheinApiTest {
+@Listeners(ExtentReportListener.class)
+public class AlbertheinApiTest extends ExtentReportListener{
 
 	private static RequestSpecification requestSpec;
 	private static Properties prop;
-
+	int invalidUserId = 123;
+	int validUserId = 1;
 	private static final int SUCCESS_STATUS_CODE = 200;
-	private static final int CREATED_STATUS_CODE = 201;
+	private static final int NOTFOUND_STATUS_CODE = 401;
 
 	@BeforeClass
 	public void setup()  {
@@ -30,77 +36,116 @@ public class AlbertheinApiTest {
 				.setBaseUri(url)
 				.setBasePath(basePath)
 				.setContentType(ContentType.JSON)
-				.build();			
+				.build();		
+		test.log(LogStatus.PASS, "Setup is Succcessfully");
 	}
+	
+	/*******************************************************
+	 * Send a GET request with /userID 
+	 * to validate endpoint
+	 ******************************************************/
+	
+	@Test(priority = 1)
+	public void testGetEndpoint(){
+		
+		Response response = given().
+				spec(requestSpec).
+		and().
+				get("/{userId}",validUserId).
+	    then().
+	    		extract().
+	    		response();
+		
+		try {
+			Assert.assertEquals(SUCCESS_STATUS_CODE, response.getStatusCode());
+			test.log(LogStatus.PASS, "Succcessfully validated status code:: " + response.getStatusCode());
+		}catch (AssertionError e) {
+			test.log(LogStatus.FAIL, "Expected status code is:: "+SUCCESS_STATUS_CODE+", instead got:: "+ response.getStatusCode());
+			Assert.fail();
+		}catch(Exception e) {
+			test.log(LogStatus.FAIL,"Error thrown is: "+e.fillInStackTrace());
+			Assert.fail();
+		}
+	}
+	
+	/*********************************************************
+	 * Send a GET request with /userID
+	 * and check  the number of stamps is not null
+	 * and check the correct number of stamps is returned
+	 **********************************************************/
+	
+	@Test(priority = 2)
+	public void testNumberOfStampsIsReturned(){
 
-	@Test
-	public void getStamps(){
-
-		given().
+		Customer customer = given().
 			spec(requestSpec).
 		when().
-			get().
-		then().
-			assertThat().
-			statusCode(SUCCESS_STATUS_CODE);				
+			get("/{userId}",validUserId).
+			as(Customer.class);
+			
+		try {
+			Assert.assertNotNull("No stamps present", customer.getNoOfStamps());
+			test.log(LogStatus.PASS, "Number of stamps returned successfully as:: " + customer.getNoOfStamps());
+		}catch (AssertionError e) {
+			test.log(LogStatus.FAIL, "Number of Stamps not found in response "+e.fillInStackTrace());
+			Assert.fail();
+		}catch(Exception e) {
+			test.log(LogStatus.FAIL,"Error thrown is: "+e.fillInStackTrace());
+			Assert.fail();
+		}
 	}
-
-	@Test
+	
+	/*********************************************************
+	 * Send a GET request with /userID
+	 * and validate if promotion is present
+	 **********************************************************/
+	
+	@Test(priority = 3)
 	public void testifPromotionExists() {
 
-		given().
-			spec(requestSpec).
-		and().
-			get("/1").
-		then().
-			assertThat().
-			statusCode(SUCCESS_STATUS_CODE);
+		Customer customer = given().
+				spec(requestSpec).
+			when().
+				get("/{userId}", validUserId).
+				as(Customer.class);
+		
+		try {
+			Assert.assertNotNull("No promotions present", customer.getPromotions());
+			test.log(LogStatus.PASS, "Number of promotions returned successfully as:: " + customer.getPromotions());
+		}catch (AssertionError e) {
+			test.log(LogStatus.FAIL, "Number of Promotions not found in response "+e.fillInStackTrace());
+			Assert.fail();
+		}catch(Exception e) {
+			test.log(LogStatus.FAIL,"Error thrown is: "+e.fillInStackTrace());
+			Assert.fail();
+		}
 	}
 
-	@Test
-	public void testNoOfStamps() {
+	/*********************************************************
+	 * Send a GET request with incorrect userID 
+	 * and check for status code 401
+	 **********************************************************/
+	
+	@Test(priority = 4)
+	public void testIncorrectUserId(){
 
-		given().
-		spec(requestSpec).
-			auth().
-			preemptive()
-			.basic(prop.getProperty("username"),prop.getProperty("password")).
-		and().
-			delete("/25").
-		then().
-			assertThat().
-			statusCode(CREATED_STATUS_CODE);
-
+		Response response = given().
+				spec(requestSpec).
+			and().
+				get("/{userID}", invalidUserId).
+			then().
+    			extract().
+    			response();	
+		try {
+			Assert.assertEquals(NOTFOUND_STATUS_CODE, response.getStatusCode());
+			test.log(LogStatus.PASS, "Correct status code returned :: " + response.getStatusCode()+" for non-exiting user with userId :: "+invalidUserId);
+		}catch (AssertionError e) {
+			test.log(LogStatus.FAIL, "Incorrect status code returned :: " + response.getStatusCode()+" for non-exiting user with userId :: "+invalidUserId);
+			Assert.fail();
+		}catch(Exception e) {
+			test.log(LogStatus.FAIL,"Error thrown is: "+e.fillInStackTrace());
+			Assert.fail();
+		}
 	}
-	
-	
-//	private JsonPath getStamps(Integer userId) {
-//		String baseUrl= "https://www.ah.nl/stamps/{userId}";
-//		RequestSpecification httpRequest = RestAssured.given();
-//		Response response = httpRequest.get(baseUrl, userId);
-//		int statusCode = response.getStatusCode();
-//		Assert.assertEquals(statusCode,200, "Incorrect status code returned");
-//		JsonPath jsonData = new JsonPath(response.body().asString()); 
-//		return jsonData;
-//	}
-//
-//
-//	@Test(priority = 1)
-//	public void testifPromotionExists() {
-//		int userId = 455;
-//		JsonPath jsonData = getStamps(userId);
-//		List promotions = jsonData.get("promotion");
-//		Assert.assertNotNull(promotions, "promotion is null");
-//	}
-//
-//	@Test(priority = 2)
-//	public void testNoOfStamps() {
-//		int userId = 455;
-//		JsonPath jsonData = getStamps(userId);
-//		Integer noOfStamps = jsonData.get("noOfStamps");
-//		Assert.assertNotNull(noOfStamps, "no Of Stamps not present ");
-//
-//	}
-
 }
 
