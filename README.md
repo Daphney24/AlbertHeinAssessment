@@ -45,7 +45,8 @@ Building Up the Framework
 * Step 2 : Add dependencies in pom.xml
 * Step 3 : Add testing plugin
 * Step 4 : Create tests
-* Step 5 : Run and verify
+* Step 5 : Run and Verify
+**Note the run and verify are only applicable if API exist
 
 ### Installation (pre-requisites)
 1. JDK 1.8+ (make sure Java class path is set)
@@ -70,10 +71,11 @@ Go to your project directory from terminal and hit following commands
 ```
 mvn test
 ```
+**Note: The above step is only aplicable is API exists
 	
 	
 ### Reporters
 	
-Once you ran your tests you can generate the reports Extent Reports to communicate pass/failure.
-
-_Note: To look at the results in IDE, open the folder test-output/Report/test/ExtentReport.html 
+Once you ran your tests, the reports are generates in Extent Reports Format to communicate pass/failure.To look at the results in IDE, open the folder 
+test-output/Report/test/ExtentReport.html
+**Note: The above step is only valid if API exists.
