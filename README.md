@@ -21,7 +21,7 @@ Automate two testcases in a language and tool of choice. Put the code on GitHub 
 
 Framework Architecture
 --------------
-    PayconiqAssessment
+    AlbertheinAssessment
 	   |
        |_src/main/java
        |  |_org.base.test
@@ -31,7 +31,7 @@ Framework Architecture
 	   |_src/main/resources
        |  |_config.properties
 	   |_src/test/java
-       |  |_org.payconiq.test
+       |  |_org.alberthein.api.test
 	   |  |  |_AlbertheinApiTest.java
        |  |_org.alberthein.model.test
        |  |  |_Customer.java
